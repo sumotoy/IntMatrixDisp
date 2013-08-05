@@ -31,7 +31,7 @@ For just 4 units (each unit normally has 4 char) it's possible drive directly fr
 will need an extra chip connected to the MCP that can be 74HC138 for 8 units till 74HC4551 or others for 16 units, in library I provided the code needed for some different ones.
 If you look at those displays pdf they provide a way to enable 4 chip with 3 lines but if you want to use this library please ignore! To enable a chip those CE lines should be low so you have to put one of them low as default, the other is controlled by the library (see wiki page).
 
-Now some wiring (look at wiki page for better view)
+Now some wiring (look at wiki page for better view) https://github.com/sumotoy/IntMatrixDisp/wiki/Wiring-Examples
 
 MCP23S17 
 
