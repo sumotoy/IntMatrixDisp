@@ -5,12 +5,12 @@ A universal Arduino/Teensy3 library for all 'Intelligent Led Matrix Displays'
 
 Intelligent Led Matrix Displays was mostly used in expensive apparatus during 80/90's and I love to use in my stuff.
 They was expensive and even now you still can find some new model for a high price but there's a lot of NOS in ebay and it's no rare find them in dismantled stuff. They are 'intelligent' but still use a lot of pin, too much for tiny micros, so I build a library that use 2 or 3 pins max for 2 char to 32 char!
-Library use a popular microchip GPIO expander called MCP23S17 (or I2C version MCP23017) that I choosed for his ability
+Library use a popular and cheap microchip GPIO expander called MCP23S17 (or I2C version MCP23017) that I choosed for his ability
 to use a special feature called HAEN that permit use 8 chip on same SPI lines (included CS).
 Good thing about these displaysis that you have to connect all units in parallel except one, the addressing pin (if you have 2 or more addressing pin one should be tied to ground). I'm using a proprietary addressing method in library that simplify a lot connections and wiring so follow documentation inside the .h file.
-Some ofthese displays can have extended function that provide brightness control and some other thing, I've implemented
+Some of these displays can have extended function that provide brightness control and some other thing, I've implemented
 where it's possible but for the other units take care about consumption! They use tons of tiny leds and can suck a lot of current!
-Those chips provide a 'blank' pin that can turn off/on display but don't touch the unit memory or content, for fast processorlike Teensy 3 it's possible apply a frequency to this pin to save current but if you want to save processing power justlook at any of these displays datasheet for a simple 555 oscillator applied to this pin.
+Those chips provide a 'blank' pin that can turn off/on display but don't touch the unit memory or content, for fast processor like Teensy 3 it's possible apply a frequency to this pin to save current but if you want to save processing power justlook at any of these displays datasheet for a simple 555 oscillator applied to this pin.
 At the moment I have tested with these displays:
 
 	DLR3416
@@ -28,7 +28,7 @@ At the moment I have tested with these displays:
 	DL2416
 	
 For just 4 units (each unit normally has 2 char) it's possible drive directly from the MCP gpio but for more units you
-will need an extra chip connected to the MCP that can be 74HC138 for 8 units till 74HC4551 orothers for 16 units, in library I provided the code neede for some.
+will need an extra chip connected to the MCP that can be 74HC138 for 8 units till 74HC4551 or others for 16 units, in library I provided the code neede for some.
 If you look at those displays pdf they provide a way to enable 4 chip with 3 lines but if you want to use this library please simply ignore! To enable a chip those CE lines should be low so you have to put one of them low as default, the other is controlled by the library.
 
 Now some wiring
@@ -90,3 +90,9 @@ I need to fix the I2C that it's working but I don't want to include all the time
 Separate the low level calls to gpio to use just one library for all gpio chips without multiple includes.
 Add more addressing chips for more addressable units.
 Lots of optimizations
+
+
+What I will not do
+
+Use shift register! they are much like SPI but I cannot share the pins so it's a waste of time and pins.
+
