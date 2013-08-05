@@ -1,24 +1,3 @@
-/*
-                               _                
- ___  _   _  _ __ ___    ___  | |_  ___   _   _ 
-/ __|| | | || '_ ` _ \  / _ \ | __|/ _ \ | | | |
-\__ \| |_| || | | | | || (_) || |_| (_) || |_| |
-|___/ \__,_||_| |_| |_| \___/  \__|\___/  \__, |
-                                          |___/ 
-
---------------------------------------------------------------------------------
-A fast C-Library for several 'Intelligent Led Matrix Displays'
-that works with just 2/3 wires though 2 shift registers or 1 GPIO extender chip,
-for most Arduinos, Arduino 2 and Teensy (3 included).
-version 1b1 (4 april 2013)
-coded by Max MC Costa for s.u.m.o.t.o.y - sumotoy@gmail.com
-note:if you want to use (even parts) make a reference to the author
---------------------------------------------------------------------------------
-version note:
-this is the first working version but only partially! Actually only SPI supported and
-many code needs fix/optimization so don't use or unexpected results are assured.
-*/
-
 #include "Arduino.h"
 
 //#include "utility/mcpB23xxx.h"
@@ -36,8 +15,9 @@ const byte tempCharA[27] = {
 0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,0x59,0x5A,0x20};
 const byte tempCharB[11] = {
 0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x20};
-//const byte brightTable[8] = {0x5C,0xB0,0xA8,0xA0,0x98,0x90,0x88,0x80};
-const byte brightTable[8] = {0x00,0x08,0x10,0x18,0x20,0x28,0x30,0x70};
+const byte brightTable[8] = {
+0b00111000,0b00110000,0b00101000,0b00100000,0b00011000,0b00010000,0b00001000,0b00000000};
+
 
 /*-----------------------CONSTRUCTOR----------------------------*/
 
@@ -47,15 +27,18 @@ IntMatrixDisp::IntMatrixDisp(const uint8_t cs_pin,const byte addr,uint8_t MLD_ty
 }
 
 //drive by I2C
+/*
 IntMatrixDisp::IntMatrixDisp(const byte addr,uint8_t MLD_type){
 	_initialize(0,0,0,0,addr,MLD_type);
 }
+*/
 
 //drive by 2 Switch Registers
+/*
 IntMatrixDisp::IntMatrixDisp(const byte dta,const byte clk,const byte ltc,uint8_t MLD_type){
 	_initialize(dta,clk,ltc,0,0x00,MLD_type);
 }
-
+*/
 
 //private - initialization (just set some vars)
 void IntMatrixDisp::_initialize(const uint8_t dta_pin,const uint8_t clk_pin,const uint8_t ltc_pin,const uint8_t cs_pin,const byte addr,uint8_t MLD_type){
@@ -69,6 +52,7 @@ void IntMatrixDisp::_initialize(const uint8_t dta_pin,const uint8_t clk_pin,cons
 		this->_write_cmd = addr << 1;
 		this->_hw_addr = addr;
 		this->_comType = 1;
+	/*	
 	} else if (dta_pin > 0 && clk_pin > 0 && cs_pin == 0){// Switch register
 		this->_csPin = 0;
 		this->_dtaPin = dta_pin;
@@ -87,71 +71,57 @@ void IntMatrixDisp::_initialize(const uint8_t dta_pin,const uint8_t clk_pin,cons
 		this->_write_cmd = addr << 1;
 		this->_hw_addr = addr;
 		this->_comType = 2;
+	*/	
 	}
 	_hasExtendedCtrl = false;
 	_softClear = false;
+	//set some basic parameters
+	_dispType = 0;
+	_digitPerUnit = 0;
+	_lowChar = 0;
+	_hiChar = 0;
+	_softClear = true;
+	_hasExtendedCtrl = false;
 	//now determine witch display we are using...
-	switch (MLD_type){
-		case DLR3416:
-		case DLO3416:
-		case DLG3416:
+	if (MLD_type == DLR3416 || MLD_type == DLO3416 || MLD_type == DLG3416){
 		_dispType = 1;
 		_digitPerUnit = 4;
 		_lowChar = 0;
 		_hiChar = 127;
 		_hasExtendedCtrl = false;
-	break;
-		case DLR2416:
-		case DLO2416:
-		case DLG2416:
+	} else if (MLD_type == DLR2416 || MLD_type == DLO2416 || MLD_type == DLG2416){
 		_dispType = 2;
 		_digitPerUnit = 4;
 		_lowChar = 0;
 		_hiChar = 127;
 		_hasExtendedCtrl = false;
-	break;	
-		case HDLA2416:
-		case HDLS2416:
-		case HDLO2416:
-		case HDLG2416:
+	} else if (MLD_type == HDLA2416 || MLD_type == HDLS2416 || MLD_type == HDLO2416 || MLD_type == HDLG2416){
 		_dispType = 2;
 		_digitPerUnit = 4;
 		_lowChar = 0;
 		_hiChar = 127;
 		_hasExtendedCtrl = true;
-	break;
-		case HPDL1414:
+	} else if (MLD_type == HPDL1414){	
 		_dispType = 3;
 		_digitPerUnit = 4;
 		_lowChar = 32;
 		_hiChar = 95;
 		_softClear = true;
 		_hasExtendedCtrl = false;
-	break;	
-		case DL3416:
+	} else if (MLD_type == DL3416){	
 		_dispType = 4;
 		_digitPerUnit = 4;
 		_lowChar = 32;
 		_hiChar = 95;
 		_softClear = true;
 		_hasExtendedCtrl = false;
-	break;
-		break;
-		case DL2416:
+	} else if (MLD_type == DL2416){	
 		_dispType = 3;
 		_digitPerUnit = 4;
 		_lowChar = 32;
 		_hiChar = 95;
 		_softClear = true;
 		_hasExtendedCtrl = false;
-	default:
-		_dispType = 0;
-		_digitPerUnit = 0;
-		_lowChar = 0;
-		_hiChar = 0;
-		_softClear = true;
-		_hasExtendedCtrl = false;
-	break;
 	}
 }
 
@@ -159,6 +129,9 @@ void IntMatrixDisp::_initialize(const uint8_t dta_pin,const uint8_t clk_pin,cons
 //public - main initialization
 void IntMatrixDisp::init(const uint8_t displays,uint8_t ADRS_CHIP){
 	_ssdelay = 3;//just for start
+	_addressMethod = 0;
+	_maxUnits = 0;
+	_ssdelay = 0;
 	if (_dispType == 0 || this->_comType == 0){
 		//something wrong in initialization, cannot continue
 		_inited = 0;
@@ -166,7 +139,7 @@ void IntMatrixDisp::init(const uint8_t displays,uint8_t ADRS_CHIP){
 		Serial.println("error in INIT");
 #endif
 	} else {
-		if (this->_comType == 1){//SPI
+		//if (this->_comType == 1){//SPI
 #ifdef DDDEBUG
 	Serial.println("spi init");
 #endif
@@ -179,6 +152,7 @@ void IntMatrixDisp::init(const uint8_t displays,uint8_t ADRS_CHIP){
 			delay(100);
 			::pinMode(this->_csPin,OUTPUT);
 			::digitalWrite(this->_csPin,HIGH);
+/*			
 		} else if (this->_comType == 3){//shift register
 			::pinMode(this->_dtaPin,OUTPUT);
 			::pinMode(this->_ltcPin,OUTPUT);
@@ -192,34 +166,21 @@ void IntMatrixDisp::init(const uint8_t displays,uint8_t ADRS_CHIP){
 #ifdef DDDEBUG
 			Serial.println("I2C init");
 #endif	
-		}
+*/
+		//}
 		gpioPinMode(OUTPUT);//set all mcp pins as out
 		_inited = 1;
 		_cueDigit = -1;
 		//identify the address method
-		switch (ADRS_CHIP){
-			case _DIRECT:
-				_addressMethod = 1;
-				_maxUnits = 4;
-				_ssdelay =0;
-			break;
-			case _74HC138:
-				_addressMethod = 3;
-				_maxUnits = 8;
-				_ssdelay = 2;
-			break;
-			case _HEF4515:
-			case _74HC4551:
-			case _74HC154:
-				_addressMethod = 4;
-				_maxUnits = 16;
-				_ssdelay = 1;
-			break;
-			default:
-				_addressMethod = 0;
-				_maxUnits = 0;
-				_ssdelay = 0;
-		};
+		if (ADRS_CHIP == _DIRECT){
+			_addressMethod = 1;
+			_maxUnits = 4;
+			_ssdelay = 0;
+		} else if (ADRS_CHIP == _74HC138){
+			_addressMethod = 3;
+			_maxUnits = 8;
+			_ssdelay = 2;
+		}
 		if (displays > _maxUnits) {
 			_displays = _maxUnits;
 		} else {
@@ -265,7 +226,7 @@ void IntMatrixDisp::clearAll(){
 }
 
 //public:only does something if display support brightness
-void IntMatrixDisp::setBrightness(byte display,uint8_t value){
+void IntMatrixDisp::setBrightness(uint8_t value,byte display){
 	if (_hasExtendedCtrl){
 		if (display == 0){
 			for (byte i=1;i<=_displays;i++){
@@ -310,134 +271,47 @@ void IntMatrixDisp::clearDigit(uint8_t digit){
 //private:modify 4 bit of _cntrBox to enable display(bit 2/3/4/5)
 void IntMatrixDisp::_setEnableDisplay(byte display){
 	_cntrBox &= B11000011;
-	switch(_addressMethod){
-		case 1:// direct mode, no chip (uses 4 bit for 4 display)
-			switch(display){
-				case 0:
-				case 1:
-					_cntrBox |= B00111000;// set bit 3,4,5 as 1
-					_cntrBox &= B11111011;// clear bits 2
-				break;
-				case 2:
-					_cntrBox |= B00110100;// set bit 2,4,5 as 1
-					_cntrBox &= B11110111;// clear bits 3
-				break;
-				case 3:
-					_cntrBox |= B00101100;// set bit 2,3,5 as 1
-					_cntrBox &= B11101111;// clear bits 4
-				break;
-				case 4:
-					_cntrBox |= B00011100;// set bit 2,3,4 as 1
-					_cntrBox &= B11011111;// clear bits 5
-				break;
-			};
-		break;
-		case 2://
-		break;
-		case 3://74LS138 chip (uses 3 bit for 8 display)		
-			switch(display){
-				case 0://out q0
-				case 1:
-					_cntrBox |= B00100000;// set bit 5 as 1
-					_cntrBox &= B11100011;// clear
-				break;
-				case 2://out q1
-					_cntrBox |= B00100100;// set 
-					_cntrBox &= B11100111;// clear
-				break;
-				case 3://out q2
-					_cntrBox |= B00101000;// set 
-					_cntrBox &= B11101011;// clear
-				break;
-				case 4://out q3
-					_cntrBox |= B00101100;// set 
-					_cntrBox &= B11101111;// clear
-				break;
-				case 5:
-					_cntrBox |= B00110000;// set 
-					_cntrBox &= B11110011;// clear
-				break;
-				case 6:
-					_cntrBox |= B00110100;// set 
-					_cntrBox &= B11110111;// clear
-				break;
-				case 7:
-					_cntrBox |= B00111000;// set 
-					_cntrBox &= B11111011;// clear
-				break;
-				case 8:
-					_cntrBox |= B00111100;// set 
-				break;
-			};
-		break;
-		case 4://HEF4515 chip (uses 4 bit for 16 display)
-			switch(display){
-				case 0:
-				case 1://0000
-					_cntrBox &= B11000011;// clear
-				break;
-				case 2://0001
-					_cntrBox |= B00000100;// set 
-					_cntrBox &= B11000111;// clear
-				break;
-				case 3://0100
-					_cntrBox |= B00001000;// set 
-					_cntrBox &= B11001011;// clear
-				break;
-				case 4://out q3
-					_cntrBox |= B00001100;// set 
-					_cntrBox &= B11001111;// clear
-				break;
-				case 5:
-					_cntrBox |= B00010000;// set 
-					_cntrBox &= B11010011;// clear
-				break;
-				case 6:
-					_cntrBox |= B00010100;// set 
-					_cntrBox &= B11010111;// clear
-				break;
-				case 7:
-					_cntrBox |= B00011000;// set 
-					_cntrBox &= B11011011;// clear
-				break;
-				case 8:
-					_cntrBox |= B00011100;// set 
-					_cntrBox &= B11011111;// clear
-				break;
-				case 9:
-					_cntrBox |= B00100000;// set 
-					_cntrBox &= B11100011;// clear
-				break;
-				case 10:
-					_cntrBox |= B00100100;// set 
-					_cntrBox &= B11100111;// clear
-				break;
-				case 11:
-					_cntrBox |= B00101000;// set 
-					_cntrBox &= B11101011;// clear
-				break;
-				case 12:
-					_cntrBox |= B00101100;// set 
-					_cntrBox &= B11101111;// clear
-				break;
-				case 13:
-					_cntrBox |= B00110000;// set 
-					_cntrBox &= B11110011;// clear
-				break;
-				case 14:
-					_cntrBox |= B00110100;// set 
-					_cntrBox &= B11110111;// clear
-				break;
-				case 15:
-					_cntrBox |= B00111000;// set 
-					_cntrBox &= B11111011;// clear
-				break;
-				case 16:
-					_cntrBox |= B00111100;// set 
-				break;
-			};
-		break;
-	};
+	if (_addressMethod == 1) {        // direct mode, no chip (uses 4 bit for 4 display)
+		if (display == 0 || display == 1){
+			_cntrBox |= B00111000;// set bit 3,4,5 as 1
+			_cntrBox &= B11111011;// clear bits 2
+		} else if (display == 2) {
+			_cntrBox |= B00110100;// set bit 2,4,5 as 1
+			_cntrBox &= B11110111;// clear bits 3
+		} else if (display == 3) {
+			_cntrBox |= B00101100;// set bit 2,3,5 as 1
+			_cntrBox &= B11101111;// clear bits 4
+		} else if (display == 4) {
+			_cntrBox |= B00011100;// set bit 2,3,4 as 1
+			_cntrBox &= B11011111;// clear bits 5
+		}
+	} else if (_addressMethod == 2) { // not now
+	} else if (_addressMethod == 3) { // 74LS138 chip (uses 3 bit for 8 display)	
+		if (display == 0 || display == 1){
+			_cntrBox |= B00100000;// set bit 5 as 1
+			_cntrBox &= B11100011;// clear
+		} else if (display == 2) {
+			_cntrBox |= B00100100;// set 
+			_cntrBox &= B11100111;// clear
+		} else if (display == 3) {
+			_cntrBox |= B00101000;// set 
+			_cntrBox &= B11101011;// clear
+		} else if (display == 4) {
+			_cntrBox |= B00101100;// set 
+			_cntrBox &= B11101111;// clear
+		} else if (display == 5) {
+			_cntrBox |= B00110000;// set 
+			_cntrBox &= B11110011;// clear
+		} else if (display == 6) {
+			_cntrBox |= B00110100;// set 
+			_cntrBox &= B11110111;// clear
+		} else if (display == 7) {
+			_cntrBox |= B00111000;// set 
+			_cntrBox &= B11111011;// clear
+		} else if (display == 8) {
+			_cntrBox |= B00111100;// set 
+		}
+	}
 }
 
 //private:digit --> witch display belong (to enable it)
@@ -466,23 +340,18 @@ uint8_t IntMatrixDisp::_selectDigit(uint8_t digit,bool unitSelect){
 	uint8_t display = _digitToUnit(digit);//witch display for the digit?
 	//int display = digit >> (_digitPerUnit/2);
 	digit = digit - (_digitPerUnit*(display-1));
-	
-	switch (digit){//this set the 2 bits
-		case 0:
-			_cntrBox &= B11111100;//clear out bits 0 e 1
-		break;
-		case 1:
-			_cntrBox |= B00000001; // set bit 0 as 1
-			_cntrBox &= B11111101;//  clear bit 1
-		break;
-		case 2:
-			_cntrBox |= B00000010; // set bit 0 as 1
-			_cntrBox &= B11111110;//  clear bit 1
-		break;
-		case 3:
-			_cntrBox |= B00000011; // set bit 0,1 as 1
-		break;
-	};
+	if (digit == 0){
+		_cntrBox &= B11111100;//clear out bits 0 e 1
+	} else if (digit == 1){
+		_cntrBox |= B00000001; // set bit 0 as 1
+		_cntrBox &= B11111101;//  clear bit 1
+	} else if (digit == 2){
+		_cntrBox |= B00000010; // set bit 0 as 1
+		_cntrBox &= B11111110;//  clear bit 1
+	} else if (digit == 3){
+		_cntrBox |= B00000011; // set bit 0,1 as 1
+	} else {
+	}
 	if (unitSelect) _setEnableDisplay(display);
 	return display;
 }
@@ -537,7 +406,7 @@ void IntMatrixDisp::writeChar(char c,bool autoPosition) {
 void IntMatrixDisp::printString(char* stringToDisplay,bool useEfx){
 	uint8_t stringLenght = strlen(stringToDisplay);
 	uint8_t cpos,thisChar;
-	if (stringLenght == 0) { // la stringa è vuota
+	if (stringLenght == 0) { // la stringa Ã¨ vuota
 	} else if (stringLenght > 0 && stringLenght <= _maxDigits){//la stringa rimane dentro il display
 		for (cpos = 0; cpos <  stringLenght; cpos++) {
 			if (_cursorPos < _maxDigits){
@@ -573,48 +442,39 @@ void IntMatrixDisp::printFloat(float number,byte digits,uint8_t PRES_VALS,bool u
 	char preChar;
 	byte prefix = 0;
 	//sign
-	switch (PRES_VALS){
-		case NONE://not use
-		break;
-		case POL://+-
-		case C://centigrades
-		case F://farenh
-		case dB://dB
-		case DEG://fi
-			tempnum = (double)number;
-			if (tempnum < 0.0) {
-				tempnum = -tempnum;
-				preChar = '-';
-			} else if (tempnum == 0){ 
-				preChar = ' ';
-			} else {
-				preChar = '+';
-			}
-			_writeCharacter(preChar,_cursorPos,true,useEfx);
-		break;
-		case Hz://Hz
-			if (number > 999.9 && number <= 9999.9){
-				prefix = 1;
-				number = number/1000;
-				digits = 1;
-			} else if (number > 9999.9 && number <= 99999.9){
-				prefix = 2;
-				number = number/10000;
-				digits = 1;
-			} else if (number > 99999.9 && number <= 999999.9){
-				prefix = 3;
-				number = number/100000;
-				digits = 1;
-			} else if (number > 999999.9){
-				prefix = 4;
-				number = number/1000000;
-				digits = 1;
-			}
-			tempnum = (double)number;
-		break;
-		default:
-			tempnum = (double)number;
-	};
+	if (PRES_VALS == NONE || PRES_VALS == POL || PRES_VALS == C || PRES_VALS == F || PRES_VALS == dB || PRES_VALS == DEG){
+		tempnum = (double)number;
+		if (tempnum < 0.0) {
+			tempnum = -tempnum;
+			preChar = '-';
+		} else if (tempnum == 0){ 
+			preChar = ' ';
+		} else {
+			preChar = '+';
+		}
+		_writeCharacter(preChar,_cursorPos,true,useEfx);
+	} else if (PRES_VALS == Hz){
+		if (number > 999.9 && number <= 9999.9){
+			prefix = 1;
+			number = number/1000;
+			digits = 1;
+		} else if (number > 9999.9 && number <= 99999.9){
+			prefix = 2;
+			number = number/10000;
+			digits = 1;
+		} else if (number > 99999.9 && number <= 999999.9){
+			prefix = 3;
+			number = number/100000;
+			digits = 1;
+		} else if (number > 999999.9){
+			prefix = 4;
+			number = number/1000000;
+			digits = 1;
+		}
+		tempnum = (double)number;
+	} else {	
+		tempnum = (double)number;
+	}
 	// correctly roundling(1.999, 2) prints as "2.00"
 	double rounding = 0.5;
 	for (byte i=0;i < digits;++i){
@@ -633,40 +493,27 @@ void IntMatrixDisp::printFloat(float number,byte digits,uint8_t PRES_VALS,bool u
 		printString(itoa(toPrint,ascii,10),useEfx);
 		remainder -= toPrint; 
 	}
-	switch (PRES_VALS){
-		case NONE: //not use
-		break;
-		case C: //centigrades
-			_writeCharacter(0x1B,getCursor(),true,useEfx);
-		break;
-		case F: //farenh
-			_writeCharacter(0x1C,getCursor(),true,useEfx);
-		break;
-		case dB: //db
+	if (PRES_VALS == NONE)       {
+	} else if (PRES_VALS == C)   {
+		_writeCharacter(0x1B,getCursor(),true,useEfx);
+	} else if (PRES_VALS == F)   {
+		_writeCharacter(0x1C,getCursor(),true,useEfx);
+	} else if (PRES_VALS == dB)  {
 		if (useEfx) _efx(getCursor());
-			printString("dB",useEfx);
-		break;
-		case DEG: //fi
-			_writeCharacter(0x08,getCursor(),true,useEfx);
-		break;
-		case Hz: //Hz
-			switch(prefix){
-				case 0:
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-					if (prefix > 0 && prefix < 4){
-						_writeCharacter('K',getCursor(),true,useEfx);
-					} else if (prefix == 4){
-						_writeCharacter('M',getCursor(),true,useEfx);
-					}
-					_writeCharacter('H',getCursor(),true,useEfx);
-					_writeCharacter('z',getCursor(),true,useEfx);
-				break;
-			};
-		break;
-	};
+		printString("dB",useEfx);
+	} else if (PRES_VALS == DEG) {
+		_writeCharacter(0x08,getCursor(),true,useEfx);
+	} else if (PRES_VALS == Hz)  {
+		if (prefix >= 0 && prefix <= 4) {
+			if (prefix < 4){
+				_writeCharacter('K',getCursor(),true,useEfx);
+			} else {
+				_writeCharacter('M',getCursor(),true,useEfx);
+			}
+			_writeCharacter('H',getCursor(),true,useEfx);
+			_writeCharacter('z',getCursor(),true,useEfx);
+		}
+	}
 	if (_autoclean) _cleanGarbage();
 }
 
@@ -783,7 +630,7 @@ void IntMatrixDisp::_scrollEngine(char* testo,uint8_t lenght,uint8_t advance){
 }
 
 void IntMatrixDisp::startSend(bool mode){
-	if (this->_comType == 1){
+	//if (this->_comType == 1){
 #if defined(__FASTSPI)
 		::digitalWriteFast(this->_csPin, LOW);
 #else
@@ -795,6 +642,7 @@ void IntMatrixDisp::startSend(bool mode){
 		} else {//OUT
 			SPI.transfer(this->_write_cmd);
 		}
+/*		
 	} else if (this->_comType == 2){//I2C
 	} else {
 #if defined(__MK20DX128__)
@@ -802,17 +650,19 @@ void IntMatrixDisp::startSend(bool mode){
 #else
 		::digitalWrite(this->_ltcPin,LOW);
 #endif
-	}
+*/
+	//}
 }
 
 void IntMatrixDisp::endSend(){
-	if (this->_comType == 1){
+	//if (this->_comType == 1){
 #if defined(__FASTSPI)
 		::digitalWriteFast(this->_csPin, HIGH);
 #else
 		::digitalWrite(this->_csPin, HIGH);
 #endif
 		_sideDelay(_ssdelay);
+/*	
 	} else if (this->_comType == 2){//I2C
 	} else {
 #if defined(__MK20DX128__)
@@ -820,22 +670,24 @@ void IntMatrixDisp::endSend(){
 #else
 		::digitalWrite(this->_ltcPin,HIGH);
 #endif
-	}
+*/
+	//}
 }
 
 
 void IntMatrixDisp::write_word(byte addr, word data){
 	startSend(0);
-	if (this->_comType == 1){
+	//if (this->_comType == 1){
 		SPI.transfer(addr);
 		SPI.transfer((byte)(data & 0x00FF));
 		SPI.transfer((byte)(data>>8));
+	/*	
 	} else if (this->_comType == 2){//I2C
 	} else {
-		//_fastShiftOut(addr);
 		_fastShiftOut((byte)(data & 0x00FF));
 		_fastShiftOut((byte)(data>>8));
-	}
+	*/	
+	//}
 	endSend();
 }
 
@@ -879,7 +731,7 @@ void IntMatrixDisp::gpioPinMode(uint8_t pin, bool mode){
 	}
 }
 
-
+/*
 void IntMatrixDisp::_fastShiftOut(uint8_t val){
 	uint8_t i;
 	for (i = 0; i < 2; i++)  {
@@ -894,6 +746,7 @@ void IntMatrixDisp::_fastShiftOut(uint8_t val){
 		#endif
 	}
 }
+*/
 
 void IntMatrixDisp::_sideDelay(uint8_t val){
 	if (val > 0){
