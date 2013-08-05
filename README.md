@@ -1,15 +1,15 @@
-IntMatrixDisp
-=============
+Intelligent Matrix Display Library
+===================================
 
-A universal Arduino/Teensy3 library for all 'Intelligent Led Matrix Displays'
+An 'universal' Arduino/Teensy3 library for all 'Intelligent Led Matrix Displays' that use just 2/3 wires.
 
-Intelligent Led Matrix Displays was mostly used in expensive apparatus during 80/90's and I love to use in my stuff.
-They was expensive and even now you still can find some new model for a high price but there's a lot of NOS in ebay and it's no rare find them in dismantled stuff. They are 'intelligent' but still use a lot of pin, too much for tiny micros, so I build a library that use 2 or 3 pins max for 2 char to 32 char!
+Intelligent Led Matrix Displays was mostly used in expensive apparatus during 80/90's and I love to use in my stuff because they are beautiful and kinda 'sexy'.
+They are/was expensive and even now you still can find some new model for a high price but there's a lot of NOS in ebay and it's no rare find them in dismantled stuff. They are 'intelligent' but still use a lot of pin, too much for tiny micros, so I build a library that use 2 or 3 pins max for 2 char to 32 char!
 Library use a popular and cheap microchip GPIO expander called MCP23S17 (or I2C version MCP23017) that I choosed for his ability
 to use a special feature called HAEN that permit use 8 chip on same SPI lines (included CS).
-Good thing about these displaysis that you have to connect all units in parallel except one, the addressing pin (if you have 2 or more addressing pin one should be tied to ground). I'm using a proprietary addressing method in library that simplify a lot connections and wiring so follow documentation inside the .h file.
+Good thing about these displays is that you have to connect pins of all units in parallel except one, the addressing pin (if you have 2 or more addressing pin one should be tied to ground). I'm using a proprietary addressing method in library that simplify a lot connections and wiring so follow documentation inside the .h file.
 Some of these displays can have extended function that provide brightness control and some other thing, I've implemented
-where it's possible but for the other units take care about consumption! They use tons of tiny leds and can suck a lot of current!
+where it's possible but for the other units take care about consumption! They use tons of tiny leds and can such a lot of current!
 Those chips provide a 'blank' pin that can turn off/on display but don't touch the unit memory or content, for fast processor like Teensy 3 it's possible apply a frequency to this pin to save current but if you want to save processing power justlook at any of these displays datasheet for a simple 555 oscillator applied to this pin.
 At the moment I have tested with these displays:
 
@@ -27,11 +27,11 @@ At the moment I have tested with these displays:
 	DL3416
 	DL2416
 	
-For just 4 units (each unit normally has 2 char) it's possible drive directly from the MCP gpio but for more units you
-will need an extra chip connected to the MCP that can be 74HC138 for 8 units till 74HC4551 or others for 16 units, in library I provided the code neede for some.
-If you look at those displays pdf they provide a way to enable 4 chip with 3 lines but if you want to use this library please simply ignore! To enable a chip those CE lines should be low so you have to put one of them low as default, the other is controlled by the library.
+For just 4 units (each unit normally has 4 char) it's possible drive directly from the MCP gpio but for more units you
+will need an extra chip connected to the MCP that can be 74HC138 for 8 units till 74HC4551 or others for 16 units, in library I provided the code needed for some different ones.
+If you look at those displays pdf they provide a way to enable 4 chip with 3 lines but if you want to use this library please ignore! To enable a chip those CE lines should be low so you have to put one of them low as default, the other is controlled by the library (see wiki page).
 
-Now some wiring
+Now some wiring (look at wiki page for better view)
 
 MCP23S17 
 
@@ -50,7 +50,7 @@ MCP23S17
       mosi (12) -> [|     |] <- SPI address A1 (4k7 resistor to 5V == 1, gnd = 0)
       miso (nc) -> [|_____|] <- SPI address A0 (4k7 resistor to 5V == 1, gnd = 0)
       
-Displays have all pins connected together but not one ofthe chip address that have to be tied to one of the CEx of
+Displays have all pins connected together but not one of the chip address that have to be tied to one of the CEx of
 MCP chip or in case you would use more than 4 units to the addressing chip, check below:
 
 ADDRESSING CHIP WIRING
@@ -77,7 +77,16 @@ Check the .h file for more documentation and don't forget to download the datash
 Note for Teensy3 users. All those displays works only at 5V so you will need a unidirectional level converter (I'm using 
 only 3 wires for the GPIO).
 
+Features:
 
+ - Use just 2/3 microcontroller PIN
+ - In SPI use HAEN that allow you share pins with other chips (max 8), CE included!
+ - It use just one GPIO for 4 to 16 units (more than 4 will use an additional chip connected to GPIO)
+ - Drive many types of displays.
+ - It uses the extra features of some chip.
+ - Can work with other library I made that uses GPIO (like NewLiquid one)
+
+ 
 What is working?
 
 Tested all displays with Arduino and Teensy3 with the MCP23s17 chip using HAEN (was on the same line of another MCP23s8 
