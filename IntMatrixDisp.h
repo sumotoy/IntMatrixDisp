@@ -5,22 +5,47 @@
 \__ \| |_| || | | | | || (_) || |_| (_) || |_| |
 |___/ \__,_||_| |_| |_| \___/  \__|\___/  \__, |
                                           |___/ 
+/*---------------------------------------------------------------------------------------
 
---------------------------------------------------------------------------------
 A fast C-Library for several 'Intelligent Led Matrix Displays'
 that works with just 2/3 wires though 2 shift registers or 1 GPIO extender chip,
-for most Arduinos, Arduino 2 and Teensy (3 included).
-version 1b1 (4 april 2013)
+for most Arduinos, Arduino 2 and Teensy3.
+http://github.com/sumotoy/IntMatrixDisp
+
 coded by Max MC Costa for s.u.m.o.t.o.y - sumotoy@gmail.com
-note:if you want to use (even parts) make a reference to the author
+note: if you want to use (even parts), inform to the author, thanks!
+
+Brief description.
+Intelligent Led Matrix Displays from the past are beautiful and sexy, they was very
+expensive and mostly usud in expensive stuff but they are very readable. Today it's
+not easy to find but sometime you can find NOS for a resonable price. First problem,
+they use a lot of pins, second dei consume quite a lot of current (of course, they are
+maded of leds!). For consumption you can use an oscillator to the blank pin but some
+have a kind of intensity control maded by an internal oscillator, for pins I used
+a fantastic SPI/I2C GPIO extender chip that saves a lot of pin and can be used in
+multiples (till 8) on same pinouts using a feature called HAEN (in SPI). This library
+need just one GPIO (from microchip, called MCP23S17) for drive 4 units but adding an extra
+addressing chip (that not use any pin of your processor) 16 units can be drived.
 --------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++
+Version 1.1b3
++++++++++++++++++++++++++++++++++
 version note:
 this is the first working version but only partially! Actually only SPI supported and
-many code needs fix/optimization so don't use or unexpected results are assured.
+many code needs fix/optimizations, you are warned.
+--------------What is working:
+all functions enabled
+most or all displays
+2 addressing methods, direct and 74HC138 (max 8 units)
+--------------ToDo:
+Optimizations
+More addressing methods
+use Teensy 3 timer for scrolling
+I2C methods
+Switch registers methods
 */
 #ifndef IntMatrixDisp_h
 #define IntMatrixDisp_h
-
 
 #include "Arduino.h"
 
@@ -28,10 +53,10 @@ many code needs fix/optimization so don't use or unexpected results are assured.
 #include "Print.h"
 //#include <utility/mcpB23xxx.h>
 
-#define INVERTED_ADDRESSING
-#define MAX_DISPLAYS 	16	//max number of displays for current hardware
-#define DEFAULT_BRIGHTNESS 0
-#define USE_DIRECT_READ  // will save ram and it's faster but not reallocate missed chars
+#define INVERTED_ADDRESSING		// location of char 0 pos will be at right, disable this will set at left
+#define MAX_DISPLAYS 		16	// max number of displays for current hardware
+#define DEFAULT_BRIGHTNESS 	0	// Only works with displays that allow extended functions	
+#define USE_DIRECT_READ  		// will save ram and it's faster but not reallocate missed chars
 //#define DDDEBUG 1
 
 /*
@@ -281,5 +306,9 @@ class IntMatrixDisp : public Print {
 	void 			_sideDelay(uint8_t val);
 	uint8_t  		_ssdelay;
 };
+<<<<<<< HEAD
 
 #endif
+=======
+#endif
+>>>>>>> fixed some problems created by github application
