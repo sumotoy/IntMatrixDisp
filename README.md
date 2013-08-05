@@ -96,6 +96,7 @@ Tested a 74HC138 for addressing 8 displays with a single GPIO and worked.
 To Do?!?
 
  - I need to fix the I2C that it's working but I don't want to include it all the time!
+ - Interrupt Scrolling! I've managed to do this in next release and will works better with teensy 3!!!
  - Separate the low level calls to gpio to use just one library for all gpio chips without multiple includes.
  - Add more addressing chips for more addressable units.
  - Lots of optimizations still needed!!!!
