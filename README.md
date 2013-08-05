@@ -12,7 +12,21 @@ Some ofthese displays can have extended function that provide brightness control
 where it's possible but for the other units take care about consumption! They use tons of tiny leds and can suck a lot of current!
 Those chips provide a 'blank' pin that can turn off/on display but don't touch the unit memory or content, for fast processorlike Teensy 3 it's possible apply a frequency to this pin to save current but if you want to save processing power justlook at any of these displays datasheet for a simple 555 oscillator applied to this pin.
 At the moment I have tested with these displays:
-DLR3416,DLO3416,DLG3416,DLR2416,DLO2416,DLG2416,HDLA2416,HDLS2416,HDLO2416,HDLG2416,HPDL1414,DL3416,DL2416.
+
+	DLR3416
+	DLO3416
+	DLG3416
+	DLR2416
+	DLO2416
+	DLG2416
+	HDLA2416
+	HDLS2416
+	HDLO2416
+	HDLG2416
+	HPDL1414
+	DL3416
+	DL2416
+	
 For just 4 units (each unit normally has 2 char) it's possible drive directly from the MCP gpio but for more units you
 will need an extra chip connected to the MCP that can be 74HC138 for 8 units till 74HC4551 orothers for 16 units, in library I provided the code neede for some.
 If you look at those displays pdf they provide a way to enable 4 chip with 3 lines but if you want to use this library please simply ignore! To enable a chip those CE lines should be low so you have to put one of them low as default, the other is controlled by the library.
@@ -60,3 +74,18 @@ _74HC138 wiring (max 8 displays)-----------------------------
         gnd         -> [|_____|] <- display 7
         
 Check the .h file for more documentation and don't forget to download the datasheet of your matrix display before all!
+Note for Teensy3 users. All those displays works only at 5V so you will need a unidirectional level converter (I'm using 
+only 3 wires for the GPIO).
+
+
+What is working?
+
+Tested all displays with Arduino and Teensy3 with the MCP23s17 chip using HAEN (was on the same line of another MCP23s8 
+that was using HAEN and both worked perfect).
+Tested a 74HC138 for addressing 8 displays with a single GPIO and worked.
+
+To Do?!?
+I need to fix the I2C that it's working but I don't want to include all the time inside library.
+Separate the low level calls to gpio to use just one library for all gpio chips without multiple includes.
+Add more addressing chips for more addressable units.
+Lots of optimizations
