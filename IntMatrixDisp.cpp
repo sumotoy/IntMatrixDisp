@@ -1,6 +1,14 @@
+<<<<<<< HEAD
+=======
+/*
++++++++++++++++++++++++++++++++++
+Version 1.1b3
++++++++++++++++++++++++++++++++++
+*/
+
+>>>>>>> fixed some problems created by github application
 #include "Arduino.h"
 
-//#include "utility/mcpB23xxx.h"
 #include <SPI.h>
 #include "intMatrixDisp.h"
 #include <stdio.h>
