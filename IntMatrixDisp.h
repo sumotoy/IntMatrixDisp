@@ -128,16 +128,17 @@ _dataBox format:CUE/D6/D5/D4/D3/D2/D1/D0
 	00111000 - 111 - 3%   - 7	-	0x70
 */
 
-#define MCP_CUE 	7
+#define MCP_CUE 	7// mcp port a
 
-#define MCP_A0 		0
-#define MCP_A1 		1
-#define MCP_CE1 	2
-#define MCP_CE2 	3
-#define MCP_CE3 	4
-#define MCP_CE4 	5
-#define MCP_CU 		6
-#define MCP_WR 		7
+#define MCP_A0 		0// mcp port b
+#define MCP_A1 		1// mcp port b
+#define MCP_CE1 	2// mcp port b
+#define MCP_CE2 	3// mcp port b
+#define MCP_CE3 	4// mcp port b
+#define MCP_CE4 	5// mcp port b
+#define MCP_CU 		6// mcp port b
+#define MCP_WR 		7// mcp port b
+
 #define MCP_DC 		0
 
 //-----------------------------------------------------
@@ -160,11 +161,13 @@ typedef enum MLD_type{
 };
 	
 typedef enum ADRS_CHIP{
-    _DIRECT 	= 50,//OK, fully working!
-	_74HC138 	= 52,//OK, fully working!
-	_HEF4515 	= 53,//NO!
-	_74HC4551	= 54,//NO!
-	_74HC154	= 55 //NO!
+    _DIRECT 	= 50,// (4 displays) OK, fully working!
+	_74HC138 	= 52,// (8 displays) OK, fully working!
+	/*
+	_HEF4515 	= 53,// (16 displays) NO!
+	_74HC4551	= 54,// (16 displays) NO!
+	_74HC154	= 55 // (16 displays) NO!
+	*/
 };	
 
 typedef enum PRES_VALS{
@@ -179,8 +182,8 @@ typedef enum PRES_VALS{
 class IntMatrixDisp : public Print {
   public:
 	IntMatrixDisp		(const uint8_t cs_pin,const byte addr,uint8_t MLD_type);//SPI
-	IntMatrixDisp		(const byte addr,uint8_t MLD_type);//I2C
-	IntMatrixDisp		(const byte dta,const byte clk,const byte ltc,uint8_t MLD_type);//switch register
+	//IntMatrixDisp		(const byte addr,uint8_t MLD_type);//I2C
+	//IntMatrixDisp		(const byte dta,const byte clk,const byte ltc,uint8_t MLD_type);//switch register
 	
 	void 				init(const uint8_t displays,uint8_t ADRS_CHIP=_DIRECT);
 	/*
@@ -191,7 +194,7 @@ class IntMatrixDisp : public Print {
 		_74HC154	=	MAX 16 displays
 	*/
 	void 				clear(byte display=1);
-	void 				clearDigit(uint8_t digit);//SOFT clear. Put SPACE in the digit
+	void 				clearDigit(uint8_t digit);
 	void 				clearAll();
 	void 				home(void);
 	uint8_t 			getCursor(void);
@@ -204,7 +207,7 @@ class IntMatrixDisp : public Print {
 	void 				printNumber(long number,bool useEfx=false);
 	void 				printFloat(float number,byte digits=2,uint8_t PRES_VALS=1,bool useEfx=0);
 	void 				scroll(char* testo,unsigned int speed=80);
-	void 				setBrightness(byte display,uint8_t value=7);//0...7
+	void 				setBrightness(uint8_t value=7,byte display=0);//0...7
 	uint8_t 			getDigitsPerUnit(void);
 	float 				byteToDb(uint8_t byteVal,float maxdbVal=6.5);
 	void				setCue(int digit);
@@ -228,7 +231,7 @@ class IntMatrixDisp : public Print {
 	void 				endSend();
 
     uint16_t 			byte2uint16(byte high_byte, byte low_byte);
-	void 				_fastShiftOut(uint8_t val);
+	//void 				_fastShiftOut(uint8_t val);
 	
 	const static byte		_IOCON = 0x0A;
 	const static byte		_IODIR = 0x00;
@@ -236,11 +239,6 @@ class IntMatrixDisp : public Print {
   private:
 	//--------------------------------------------- PRIVATE DATA
 	byte 				_inited;
-	//uint8_t 			_dtaPin;
-	//uint8_t 			_clkPin;
-	//uint8_t 			_ltcPin;
-	//uint8_t 			_csPin;
-	//uint8_t 			_address;
 	uint8_t 			_displays;
 	uint8_t 			_dispType;
 	uint8_t    			_digitPerUnit;
