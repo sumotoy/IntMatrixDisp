@@ -13,19 +13,19 @@ where it's possible but for the other units take care about consumption! They us
 Those chips provide a 'blank' pin that can turn off/on display but don't touch the unit memory or content, for fast processor like Teensy 3 it's possible apply a frequency to this pin to save current but if you want to save processing power justlook at any of these displays datasheet for a simple 555 oscillator applied to this pin.
 At the moment I have tested with these displays:
 
-	DLR3416
-	DLO3416
-	DLG3416
-	DLR2416
-	DLO2416
-	DLG2416
-	HDLA2416
-	HDLS2416
-	HDLO2416
-	HDLG2416
-	HPDL1414
-	DL3416
-	DL2416
+ - DLR3416
+ - DLO3416
+ - DLG3416
+ - DLR2416
+ - DLO2416
+ - DLG2416
+ - HDLA2416
+ - HDLS2416
+ - HDLO2416
+ - HDLG2416
+ - HPDL1414
+ - DL3416
+ - DL2416
 	
 For just 4 units (each unit normally has 4 char) it's possible drive directly from the MCP gpio but for more units you
 will need an extra chip connected to the MCP that can be 74HC138 for 8 units till 74HC4551 or others for 16 units, in library I provided the code needed for some different ones.
