@@ -104,4 +104,6 @@ To Do?!?
 What I will not do
 
 Use shift register! they are much like SPI but I cannot share the pins so it's a waste of time and pins.
+![example](http://i1189.photobucket.com/albums/z437/theamra/CIMG1492.jpg)
+
 
