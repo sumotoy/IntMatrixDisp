@@ -1,0 +1,62 @@
+#######################################
+# Syntax Coloring Map For IntMatrixDisp
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+IntMatrixDisp	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+init	KEYWORD2
+setAddressChip	KEYWORD2
+clear	KEYWORD2
+clearDigit	KEYWORD2
+clearAll	KEYWORD2
+home	KEYWORD2
+getCursor	KEYWORD2
+setCursor	KEYWORD2
+setAutoclean	KEYWORD2
+writeChar	KEYWORD2
+printString	KEYWORD2
+printNumber	KEYWORD2
+printFloat	KEYWORD2
+contextValue	KEYWORD2
+scroll	KEYWORD2
+setBrightness	KEYWORD2
+getDigitsPerUnit	KEYWORD2
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+DLR3416	LITERAL1
+DLO3416	LITERAL1
+DLG3416	LITERAL1
+DLR2416	LITERAL1
+DLO2416	LITERAL1
+DLG2416	LITERAL1
+HDLA2416	LITERAL1
+HDLS2416	LITERAL1
+HDLO2416	LITERAL1
+HDLG2416	LITERAL1
+HPDL1414	LITERAL1
+DL3416	LITERAL1
+DL2416	LITERAL1
+
+_DIRECT	LITERAL1
+_74HC138	LITERAL1
+_HEF4515	LITERAL1
+_74HC4551	LITERAL1
+_74HC154	LITERAL1
+
+NONE	LITERAL1
+POL	LITERAL1
+C	LITERAL1
+F	LITERAL1
+dB	LITERAL1
+DEG	LITERAL1
+Hz	LITERAL1
