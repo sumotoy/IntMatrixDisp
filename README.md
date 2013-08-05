@@ -40,13 +40,16 @@ Displays have all pins connected together but not one ofthe chip address that ha
 MCP chip or in case you would use more than 4 units to the addressing chip, check below:
 
 ADDRESSING CHIP WIRING
+
 _DIRECT wiring (max 4 displays)------------------------------
+
     mcp pin3 [CE1]  		->		  display 1	
     mcp pin4 [CE2]  		->		  display 2			
     mcp pin5 [CE3]  		->		  display 3	
     mcp pin6 [CE4]  		->		  display 4		
 				
 _74HC138 wiring (max 8 displays)-----------------------------
+
     mcp pin3 [CE1]  -> [|--U--|] <- +5v
     mcp pin4 [CE2]  -> [|     |] <- display 1
     mcp pin5 [CE3]  -> [|     |] <- display 2
