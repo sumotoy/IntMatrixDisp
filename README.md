@@ -1,7 +1,7 @@
 Intelligent Matrix Display Library
 ===================================
 
-An 'universal' Arduino/Teensy3 library for all 'Intelligent Led Matrix Displays' that use just 2/3 wires.
+An 'universal' Arduino/Teensy/Energia library for all 'Intelligent Led Matrix Displays' that use just 2/3 wires.
 
 Intelligent Led Matrix Displays was mostly used in expensive apparatus during 80/90's and I love to use in my stuff because they are beautiful and kinda 'sexy'.
 They are/was expensive and even now you still can find some new model for a high price but there's a lot of NOS in ebay and it's no rare find them in dismantled stuff. They are 'intelligent' but still use a lot of pin, too much for tiny micros, so I build a library that use 2 or 3 pins max for 2 char to 32 char!
