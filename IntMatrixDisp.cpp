@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-=======
-/*
-+++++++++++++++++++++++++++++++++
-Version 1.1b3
-+++++++++++++++++++++++++++++++++
-*/
-
->>>>>>> fixed some problems created by github application
+#if defined(ENERGIA) // LaunchPad, FraunchPad and StellarPad specific
+#include "Energia.h"
+#else
 #include "Arduino.h"
-
+#endif
 #include <SPI.h>
 #include "intMatrixDisp.h"
 #include <stdio.h>
@@ -152,9 +146,11 @@ void IntMatrixDisp::init(const uint8_t displays,uint8_t ADRS_CHIP){
 	Serial.println("spi init");
 #endif
 			SPI.begin();
-#if defined(__MK20DX128__)
+#if defined(__MK20DX128__) || defined(__MK20DX256__)
 			SPI_CLOCK_DIV4;
-#elif defined(__arm__)//dunnoyet!
+#elif defined(__SAM3X8E__)	
+			SPI_CLOCK_DIV4;
+#else
 			SPI_CLOCK_DIV4;
 #endif
 			delay(100);
@@ -414,7 +410,7 @@ void IntMatrixDisp::writeChar(char c,bool autoPosition) {
 void IntMatrixDisp::printString(char* stringToDisplay,bool useEfx){
 	uint8_t stringLenght = strlen(stringToDisplay);
 	uint8_t cpos,thisChar;
-	if (stringLenght == 0) { // la stringa Ã¨ vuota
+	if (stringLenght == 0) { // la stringa è vuota
 	} else if (stringLenght > 0 && stringLenght <= _maxDigits){//la stringa rimane dentro il display
 		for (cpos = 0; cpos <  stringLenght; cpos++) {
 			if (_cursorPos < _maxDigits){
@@ -639,7 +635,7 @@ void IntMatrixDisp::_scrollEngine(char* testo,uint8_t lenght,uint8_t advance){
 
 void IntMatrixDisp::startSend(bool mode){
 	//if (this->_comType == 1){
-#if defined(__FASTSPI)
+#if defined(__MK20DX128__) || defined(__MK20DX256__)
 		::digitalWriteFast(this->_csPin, LOW);
 #else
 		::digitalWrite(this->_csPin, LOW);
@@ -664,7 +660,7 @@ void IntMatrixDisp::startSend(bool mode){
 
 void IntMatrixDisp::endSend(){
 	//if (this->_comType == 1){
-#if defined(__FASTSPI)
+#if defined(__MK20DX128__) || defined(__MK20DX256__)
 		::digitalWriteFast(this->_csPin, HIGH);
 #else
 		::digitalWrite(this->_csPin, HIGH);
